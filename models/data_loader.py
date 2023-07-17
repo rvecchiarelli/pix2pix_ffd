@@ -1,10 +1,10 @@
-from torchvision import transforms
+from torchvision import transform
 import torch 
 import pandas as pd
-from torchvision.transforms import Lambda
+from torchvision import Lambda
 from torch.utils.data import Dataset
 
-def RGBtoVel(data): #based off Christoph's MATLAB code to generate the velocities from the images for validation steps
+def RGBtoVel(data): #based off Christoph's MATLAB code to generate the velocities from the images for validation steps (/FinalSubissions_Vecchiarelli/Code/MATLAB Code/RevertImageToNumerical.m)
     
     #takes the index from lookUpRGBValue and scales it within the bounds of the velocity for the specific vector
     def physicalFromNormalized(normalized, bounds):
@@ -26,11 +26,11 @@ def RGBtoVel(data): #based off Christoph's MATLAB code to generate the velocitie
         value = normalizedIndex
         return value
     
-    #bounds for the U velocity
-    bounds = [-10.6864, 9.6914]
+    #bounds for the velocity 
+    boundsU = [-10.6864, 9.6914]
     #inputted data 
     img = data
-    #import the parula colormap values as a tensor
+    #import the parula colormap values from .csv
     cmap = torch.tensor(pd.read_csv('parula.csv').to_numpy())
 
     imsize = torch.Tensor.size(img)
@@ -45,42 +45,30 @@ def RGBtoVel(data): #based off Christoph's MATLAB code to generate the velocitie
 
             normalizedValueFromRGB = lookUpRGBValue(cmap, img, sampleX, sampleY)
 
-            physical_val = physicalFromNormalized(normalizedValueFromRGB,bounds)
+            physical_val = physicalFromNormalized(normalizedValueFromRGB,boundsU)
             ValuesRemapped[x,y] = physical_val
 
     return ValuesRemapped
 
 #define the transform as the custom lambda transform using the RGB to Vel def
-transforms = Lambda(RGBtoVel)
+transform = Lambda(RGBtoVel)
 
 #make the subset to be used in the "mass loss"
-class GetVel(Dataset):
-    #initialize the class, get the ground truth (real) and generated (fake) images and the transforms (custom lambda transform)
-    def __init__(self, fake_data, real_data, transforms = transforms, target_transforms = transforms):
-        self.real_data = torch.tensor(real_data)
-        self.fake_data = torch.tensor(fake_data)
-        self.transforms = transforms
-        self.target_transforms = target_transforms
+class GetVelfromRGB(Dataset):
+    #initialize the class, get the data from the images and the transform (custom lambda transform)
+    def __init__(self, rgb_data, transform = transform):
+        self.rgb_data = torch.tensor(rgb_data)
+        self.transform = transform
 
     #return the number of samples of the data
     def __len__ (self):
-        return len(self.fake_data)
+        return len(self.rgb_data)
     
     def __getitem__(self, index):
-        #get the ground truth and generated data for each index
-        fake_data = self.fake_data[index]
-        real_data = self.real_data[index]
-        #apply the transforms (RGBtoVel) to the data subset
-        if self.transforms:
-            fake_data_U = self.transforms(fake_data)
-        if self.target_transforms:
-            real_data_U = self.target_transforms(real_data)
+        #get the data for each index
+        rgb_data = self.rgb_data[index]
+        #apply the transform (RGBtoVel) to the data subset
+        if self.transform:
+            vel_data = self.transform(rgb_data)
         #return the ground truth and generated velocities as tensors
-        return fake_data, real_data, fake_data_U, real_data_U
-    
-#Use the custom dataset to transform RGB data to velocity data to be used to calculate loss
-_ , _ , fake_velocities, real_velocities = GetVel()
-
-#real_loader = dataloader(real_velocities, shuffle = false``)
-
-
+        return rgb_data, vel_data
