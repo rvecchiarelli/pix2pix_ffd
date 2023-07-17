@@ -4,6 +4,8 @@ import pandas as pd
 from torchvision.transforms import Lambda
 from torch.utils.data import Dataset
 
+#this is a test for github
+
 def RGBtoVel(data): #based off Christoph's MATLAB code to generate the velocities from the images for validation steps
     
     #takes the index from lookUpRGBValue and scales it within the bounds of the velocity for the specific vector
