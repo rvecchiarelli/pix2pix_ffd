@@ -85,19 +85,18 @@ class Pix2PixModel(BaseModel):
 
         The option 'direction' can be used to swap images in domain A and domain B.
         """
-        self.fake_data, self.real_data, self.fake_velocities, self.real_velocities = data_loader.GetVel()
+        
 
         AtoB = self.opt.direction == 'AtoB'
         self.real_A = input['A' if AtoB else 'B'].to(self.device)
         self.real_B = input['B' if AtoB else 'A'].to(self.device)
         self.image_paths = input['A_paths' if AtoB else 'B_paths']
-        #call for real
+        self.real_vel = data_loader.GetVelfromRGB(self.real_B)
 
     def forward(self):
         """Run forward pass; called by both functions <optimize_parameters> and <test>."""
         self.fake_B = self.netG(self.real_A)  # G(A)
-
-        #call for fake
+        self.fake_vel = data_loader.GetVelfromRGB(self.fake_B)
 
     def backward_D(self):
         """Calculate GAN loss for the discriminator"""
@@ -122,7 +121,7 @@ class Pix2PixModel(BaseModel):
         # Second, G(A) = B
         self.loss_G_L1 = self.criterionL1(self.fake_B, self.real_B) * self.opt.lambda_L1
         """ADDED LOSS"""
-        self.loss_G_Lmass = self.criterionLmass(self.fake_B, self.real_B)
+        self.loss_G_Lmass = self.criterionLmass(self.fake_vel, self.real_vel)
         # combine loss and calculate gradients
         self.loss_G = self.loss_G_GAN + self.loss_G_L1 + self.loss_G_Lmass
         self.loss_G.backward()

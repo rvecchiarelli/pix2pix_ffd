@@ -71,4 +71,4 @@ class GetVelfromRGB(Dataset):
         if self.transform:
             vel_data = self.transform(rgb_data)
         #return the ground truth and generated velocities as tensors
-        return rgb_data, vel_data
+        return vel_data
