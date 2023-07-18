@@ -1,0 +1,24 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: train.py",
+            "type": "python",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": true,
+            "args":["--dataroot", "C:/Users/bekve/OneDrive/Documents/School/PostGrad Stuff/Semester 4/Semester Project/pix2pix_ffd/U_Scaled", "--name", "U_Lmass_dataload_trial2", "--model", "pix2pix", "--direction", "BtoA", "--display_id", "0", "--use_wandb", "--wandb_project_name", "SemesterProject", "--n_epochs", "1", "--n_epochs_decay", "1", "--gpu_ids", "-1"]
+            //for args:
+            // "--dataroot", "file path to training data folder"
+            // "--name", "unique name for w&b run"
+            //"--display_id", "0" change zero to 1 to use visdom to display loss graphs
+            //"--n_epochs", "1", "--n_epochs_decay", "1" change for number of epochs or delete for default
+            //"--gpu_ids", "-1" delete to run with gpu
+        },
+    
+    ]
+}

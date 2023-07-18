@@ -618,14 +618,14 @@ class PixelDiscriminator(nn.Module):
 
 
 class Umass(nn.Module):
-    def __init__(self):
+    #def __init__(self):
         #super(Umass, self).__init__()
-        super(GANLoss, self).__init__()
+        #super(GANLoss, self).__init__()
 
     def forward(self,fake_data,real_data):
         a = 0
-        nx = torch.Tensor.size(real_data, dim=1)
-        ny = torch.Tensor.size(real_data, dim=0)
+        nx = len(real_data) #double check this!! does it always crop to square?? if not must use other method
+        ny = len(real_data)
         m = 1
         coef = (1/(m*(nx-2)*(ny-2)))
         for l in range(1,m+1):

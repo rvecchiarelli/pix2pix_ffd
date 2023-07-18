@@ -1,7 +1,6 @@
-from torchvision import transform
 import torch 
 import pandas as pd
-from torchvision import Lambda
+from torchvision.transforms import Lambda
 from torch.utils.data import Dataset
 
 def RGBtoVel(data): #based off Christoph's MATLAB code to generate the velocities from the images for validation steps (/FinalSubissions_Vecchiarelli/Code/MATLAB Code/RevertImageToNumerical.m)
