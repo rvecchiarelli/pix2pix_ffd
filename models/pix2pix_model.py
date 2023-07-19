@@ -2,6 +2,7 @@ import torch
 from .base_model import BaseModel
 from . import networks
 from . import data_loader
+from torch.utils.data import DataLoader
 
 class Pix2PixModel(BaseModel):
     """ This class implements the pix2pix model, for learning a mapping from input images to output images given paired data.
@@ -91,12 +92,14 @@ class Pix2PixModel(BaseModel):
         self.real_A = input['A' if AtoB else 'B'].to(self.device)
         self.real_B = input['B' if AtoB else 'A'].to(self.device)
         self.image_paths = input['A_paths' if AtoB else 'B_paths']
-        self.real_vel = data_loader.GetVelfromRGB(self.real_B)
+        
+        
+
 
     def forward(self):
         """Run forward pass; called by both functions <optimize_parameters> and <test>."""
         self.fake_B = self.netG(self.real_A)  # G(A)
-        self.fake_vel = data_loader.GetVelfromRGB(self.fake_B)
+       
 
     def backward_D(self):
         """Calculate GAN loss for the discriminator"""
@@ -113,6 +116,8 @@ class Pix2PixModel(BaseModel):
         self.loss_D.backward()
 
     def backward_G(self):
+        self.real_vel =next(iter(DataLoader(data_loader.GetVelfromRGB(self.real_B))))
+        self.fake_vel = next(iter(DataLoader(data_loader.GetVelfromRGB(self.fake_B))))
         """Calculate GAN and L1 loss for the generator"""
         # First, G(A) should fake the discriminator
         fake_AB = torch.cat((self.real_A, self.fake_B), 1)

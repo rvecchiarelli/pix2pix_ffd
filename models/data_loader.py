@@ -2,6 +2,7 @@ import torch
 import pandas as pd
 from torchvision.transforms import Lambda
 from torch.utils.data import Dataset
+from torchvision.transforms import Compose
 
 def RGBtoVel(data): #based off Christoph's MATLAB code to generate the velocities from the images for validation steps (/FinalSubissions_Vecchiarelli/Code/MATLAB Code/RevertImageToNumerical.m)
     
@@ -28,7 +29,7 @@ def RGBtoVel(data): #based off Christoph's MATLAB code to generate the velocitie
     #bounds for the velocity 
     boundsU = [-10.6864, 9.6914]
     #inputted data 
-    img = data
+    img = torch.Tensor.permute(data, (1,2,0))
     #import the parula colormap values from .csv
     cmap = torch.tensor(pd.read_csv('parula.csv').to_numpy())
 
@@ -56,14 +57,14 @@ transform = Lambda(RGBtoVel)
 class GetVelfromRGB(Dataset):
     #initialize the class, get the data from the images and the transform (custom lambda transform)
     def __init__(self, rgb_data, transform = transform):
-        self.rgb_data = torch.tensor(rgb_data)
+        self.rgb_data = rgb_data
         self.transform = transform
 
     #return the number of samples of the data
     def __len__ (self):
         return len(self.rgb_data)
     
-    def __getitem__(self, index):
+    def __getitem__(self,index):
         #get the data for each index
         rgb_data = self.rgb_data[index]
         #apply the transform (RGBtoVel) to the data subset

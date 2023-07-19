@@ -624,15 +624,14 @@ class Umass(nn.Module):
 
     def forward(self,fake_data,real_data):
         a = 0
-        nx = len(real_data) #double check this!! does it always crop to square?? if not must use other method
+        nx = len(real_data) 
         ny = len(real_data)
         m = 1
         coef = (1/(m*(nx-2)*(ny-2)))
-        for l in range(1,m+1):
-            for i in range(1, nx-2):
-                for j in range(1, ny-2):
-                    sum = torch.min(-12,torch.log10(torch.abs((((0.5*((real_data[j, i+1])-real_data[j, i-1])))) - (((0.5*((fake_data[j,i+1])-fake_data[j,i-1])))))))
-                    a = a+sum  
+        for i in range(1, nx-2):
+            for j in range(1, ny-2):
+                sum = torch.min(-12,torch.log10(torch.abs((((0.5*((real_data[j, i+1])-real_data[j, i-1])))) - (((0.5*((fake_data[j,i+1])-fake_data[j,i-1])))))))
+                a = a+sum  
 
         L_mass = coef * a
         return L_mass

@@ -11,11 +11,18 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args":["--dataroot", "C:/Users/bekve/OneDrive/Documents/School/PostGrad Stuff/Semester 4/Semester Project/pix2pix_ffd/U_Scaled", "--name", "U_Lmass_dataload_trial2", "--model", "pix2pix", "--direction", "BtoA", "--display_id", "0", "--use_wandb", "--wandb_project_name", "SemesterProject", "--n_epochs", "1", "--n_epochs_decay", "1", "--gpu_ids", "-1"]
+            //"args":["--dataroot", "C:/Users/bekve/OneDrive/Documents/School/PostGrad Stuff/Semester 4/Semester Project/pix2pix_ffd/U_Scaled", "--name", "U_Lmass_dataload_trial2", "--model", "pix2pix", "--direction", "BtoA", "--display_id", "0", "--use_wandb", "--wandb_project_name", "SemesterProject", "--n_epochs", "1", "--n_epochs_decay", "1", "--gpu_ids", "-1"]
+            "args":["--dataroot", "C:/Users/bekve/OneDrive/Documents/School/PostGrad Stuff/Semester 4/Semester Project/pix2pix_ffd/U_Scaled", "--name", "U_Lmass_dataload_trial2", "--model", "pix2pix", "--direction", "BtoA", "--display_id", "0", "--n_epochs", "1", "--n_epochs_decay", "1", "--gpu_ids", "-1", "--batch_size", "1"]
+            
+            
+            
             //for args:
+
+            //remove w&b args for debug (line 14 includes these args)
+
             // "--dataroot", "file path to training data folder"
             // "--name", "unique name for w&b run"
-            //"--display_id", "0" change zero to 1 to use visdom to display loss graphs
+            //"--display_id", "0" change 0 to 1 to use visdom to display loss graphs
             //"--n_epochs", "1", "--n_epochs_decay", "1" change for number of epochs or delete for default
             //"--gpu_ids", "-1" delete to run with gpu
         },
