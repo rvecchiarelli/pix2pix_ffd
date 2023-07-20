@@ -116,8 +116,7 @@ class Pix2PixModel(BaseModel):
         self.loss_D.backward()
 
     def backward_G(self):
-        self.real_vel =next(iter(DataLoader(data_loader.GetVelfromRGB(self.real_B))))
-        self.fake_vel = next(iter(DataLoader(data_loader.GetVelfromRGB(self.fake_B))))
+        
         """Calculate GAN and L1 loss for the generator"""
         # First, G(A) should fake the discriminator
         fake_AB = torch.cat((self.real_A, self.fake_B), 1)
@@ -133,6 +132,8 @@ class Pix2PixModel(BaseModel):
 
     def optimize_parameters(self):
         self.forward()                   # compute fake images: G(A)
+        self.real_vel =next(iter(DataLoader(data_loader.GetVelfromRGB(self.real_B))))
+        self.fake_vel = next(iter(DataLoader(data_loader.GetVelfromRGB(self.fake_B))))
         # update D
         self.set_requires_grad(self.netD, True)  # enable backprop for D
         self.optimizer_D.zero_grad()     # set D's gradients to zero
