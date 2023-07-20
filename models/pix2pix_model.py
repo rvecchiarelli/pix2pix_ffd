@@ -92,6 +92,7 @@ class Pix2PixModel(BaseModel):
         self.real_A = input['A' if AtoB else 'B'].to(self.device)
         self.real_B = input['B' if AtoB else 'A'].to(self.device)
         self.image_paths = input['A_paths' if AtoB else 'B_paths']
+        self.real_vel =next(iter(DataLoader(data_loader.GetVelfromRGB(self.real_B))))
         
         
 
@@ -99,6 +100,7 @@ class Pix2PixModel(BaseModel):
     def forward(self):
         """Run forward pass; called by both functions <optimize_parameters> and <test>."""
         self.fake_B = self.netG(self.real_A)  # G(A)
+        self.fake_vel = next(iter(DataLoader(data_loader.GetVelfromRGB(self.fake_B))))
        
 
     def backward_D(self):
@@ -116,7 +118,6 @@ class Pix2PixModel(BaseModel):
         self.loss_D.backward()
 
     def backward_G(self):
-        
         """Calculate GAN and L1 loss for the generator"""
         # First, G(A) should fake the discriminator
         fake_AB = torch.cat((self.real_A, self.fake_B), 1)
@@ -126,14 +127,13 @@ class Pix2PixModel(BaseModel):
         self.loss_G_L1 = self.criterionL1(self.fake_B, self.real_B) * self.opt.lambda_L1
         """ADDED LOSS"""
         self.loss_G_Lmass = self.criterionLmass(self.fake_vel, self.real_vel)
-        # combine loss and calculate gradients
+        # combine loss and calculate gradients 
         self.loss_G = self.loss_G_GAN + self.loss_G_L1 + self.loss_G_Lmass
         self.loss_G.backward()
 
     def optimize_parameters(self):
         self.forward()                   # compute fake images: G(A)
-        self.real_vel =next(iter(DataLoader(data_loader.GetVelfromRGB(self.real_B))))
-        self.fake_vel = next(iter(DataLoader(data_loader.GetVelfromRGB(self.fake_B))))
+
         # update D
         self.set_requires_grad(self.netD, True)  # enable backprop for D
         self.optimizer_D.zero_grad()     # set D's gradients to zero
