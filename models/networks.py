@@ -618,26 +618,16 @@ class PixelDiscriminator(nn.Module):
 
 
 class Umass(nn.Module):
-    #def __init__(self):
-        #super(Umass, self).__init__()
-        #super(GANLoss, self).__init__()
+    def __init__(self):
+        super(Umass, self).__init__()
+        self.coef = torch.tensor((1/(1*(256-2)*(256-2))))
 
     def forward(self,fake_data,real_data):
-        a = torch.tensor(0)
         fake_data = torch.Tensor.permute(fake_data, (1,2,0))
         real_data = torch.Tensor.permute(real_data, (1,2,0))
-        nx = 256
-        ny = 256
-        m = 1
-        coef = torch.tensor((1/(m*(nx-2)*(ny-2))))
-        for i in range(1, nx-2):
-            for j in range(1, ny-2):
-                #sum = torch.min(-12,torch.log10(torch.abs((((0.5*((real_data[j, i+1])-real_data[j, i-1])))) - (((0.5*((fake_data[j,i+1])-fake_data[j,i-1])))))))
-                sum = torch.abs((((0.5*((real_data[j, i+1])-real_data[j, i-1])))) - (((0.5*((fake_data[j,i+1])-fake_data[j,i-1])))))
-                a = a+sum  
-                
+         
+        diff = torch.abs((0.5 * (real_data[1:-1, 2:] - real_data[1:-1, :-2]))- (0.5 * (fake_data[1:-1, 2:] - fake_data[1:-1, :-2]))).sum()
         
-        
-        L_mass = coef * a
+        L_mass = self.coef * diff
         
         return L_mass

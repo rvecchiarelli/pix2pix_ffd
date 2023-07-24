@@ -3,6 +3,9 @@ import pandas as pd
 from torchvision.transforms import Lambda
 from torch.utils.data import Dataset
 
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
+
 def RGBtoVel(data): #based off Christoph's MATLAB code to generate the velocities from the images for validation steps (/FinalSubissions_Vecchiarelli/Code/MATLAB Code/RevertImageToNumerical.m)
     
     #takes the index from lookUpRGBValue and scales it within the bounds of the velocity for the specific vector
@@ -15,15 +18,11 @@ def RGBtoVel(data): #based off Christoph's MATLAB code to generate the velocitie
     #This function gets takes the image data as a tensor and compares it to the colormap (currently '.csv' of RGB values from MATLAB's "parula" colormap).
     #calculates the minimum distance of the pixel to a cmap value and returns that index
     def lookUpRGBValue(cmap, image):
-        #sampleRGB = image.permute(2,0,1)
-        cmap = cmap.unsqueeze(1)
-        cmap = cmap.unsqueeze(1)
-        sampleRGB = image
+        cmap = cmap.unsqueeze(1).unsqueeze(1)
         min_value = -1
         max_value = 1
-        normalizedRGB = (sampleRGB - min_value) / (max_value - min_value)
-        normalizedRGB = normalizedRGB.unsqueeze(0)
-        normalizedRGB = normalizedRGB.repeat(256, 1, 1, 1)
+        normalizedRGB = (image - min_value) / (max_value - min_value)
+        normalizedRGB = normalizedRGB.unsqueeze(0).repeat(256, 1, 1, 1)
         distances = torch.sqrt(torch.sum((torch.sub(normalizedRGB, cmap))**2, axis =3))
         [minVals,minIndex] = torch.min(distances, dim=(0))
         normalizedIndex = minIndex/ (255)
