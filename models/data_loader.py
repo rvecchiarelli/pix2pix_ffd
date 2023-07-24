@@ -32,9 +32,9 @@ def RGBtoVel(data): #based off Christoph's MATLAB code to generate the velocitie
     #bounds for the velocity 
     boundsU = [-10.6864, 9.6914]
     #inputted data 
-    img = torch.Tensor.permute(data, (1,2,0))
+    img = torch.Tensor.permute(data, (1,2,0)).to(device)
     #import the parula colormap values from .csv
-    cmap = torch.tensor(pd.read_csv('parula.csv', header= None).values)
+    cmap = torch.tensor(pd.read_csv('parula.csv', header= None).values).to(device)
 
 
     normalizedValueFromRGB = lookUpRGBValue(cmap, img)
